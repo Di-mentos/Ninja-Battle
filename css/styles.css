@@ -58,16 +58,30 @@ a, a:hover {
   text-decoration: none;
 }
 
-.character-Sasuke {
-  width: 84px;
-  height: 150px;
-  overflow: hidden;
-  margin: 0 auto;
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
-.character-Sasuke__stance {
-  height: 150px;
-  -webkit-animation: SasukeStance 1.2s steps(6) infinite;
-          animation: SasukeStance 1.2s steps(6) infinite;
+
+.character-Sasuke {
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.image {
   -ms-interpolation-mode: nearest-neighbor;
       image-rendering: -webkit-optimize-contrast;
       image-rendering: -moz-crisp-edges;
@@ -75,14 +89,11 @@ a, a:hover {
       image-rendering: pixelated;
 }
 
-@keyFrames SasukeStance {
-  from {
-    -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    -webkit-transform: translate3d(-100%, 0, 0);
-            transform: translate3d(-100%, 0, 0);
-  }
-}
+/* @keyFrames SasukeStance{
+	from{
+		transform: translate3d(0, 0, 0);
+	}
+	to{
+		transform: translate3d(-100%, 0, 0);
+	}
+} */

@@ -1,25 +1,32 @@
 @import 'reset.scss';
 
-$spriteSize: 3;
-.character-Sasuke{
-	width: 28px * $spriteSize;
-	height: 50px * $spriteSize;
-	//background: red;
-	overflow: hidden;
-	margin: 0 auto;
-
-	&__stance{
-		height: 50px * $spriteSize;
-		animation: SasukeStance 1.2s steps(6) infinite;
-		image-rendering: pixelated;
-	}
+body{
+	display: flex;
+	justify-content: center;
 }
 
-@keyFrames SasukeStance{
+$spriteSize: 4;
+.character-Sasuke{
+	position: relative;
+	overflow: hidden;
+}
+
+.gallery{
+	position: absolute;
+	left: 0;
+	top: 0;
+	display: flex;
+}
+
+.image{
+	image-rendering: pixelated;
+}
+
+/* @keyFrames SasukeStance{
 	from{
 		transform: translate3d(0, 0, 0);
 	}
 	to{
 		transform: translate3d(-100%, 0, 0);
 	}
-}
+} */
