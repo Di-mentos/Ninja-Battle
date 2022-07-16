@@ -71,7 +71,7 @@ body {
           align-items: flex-end;
 }
 
-.character-Sasuke {
+.Sasuke-crop, .ability-crop {
   position: relative;
   overflow: hidden;
 }
