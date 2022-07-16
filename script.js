@@ -282,5 +282,5 @@ function animateMovement(crop, gallery, widthValues, heightValues, hero, type, w
 // sasuke.sasukeWeaponThrowJumpLeft();
 // sasuke.sasukeWinRight();
 // sasuke.sasukeWinLeft();
-sasuke.sasukeChidoriNagashiRight();
+// sasuke.sasukeChidoriNagashiRight();
 // sasuke.sasukeChidoriNagashiLeft();
