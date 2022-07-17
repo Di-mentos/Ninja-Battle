@@ -71,15 +71,8 @@ body {
           align-items: flex-end;
 }
 
-.Sasuke-crop, .ability-crop {
-  position: relative;
-  overflow: hidden;
-}
-
 .gallery {
   position: absolute;
-  left: 0;
-  top: 0;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -93,11 +86,28 @@ body {
       image-rendering: pixelated;
 }
 
-/* @keyFrames SasukeStance{
-	from{
-		transform: translate3d(0, 0, 0);
-	}
-	to{
-		transform: translate3d(-100%, 0, 0);
-	}
-} */
+.character-Sasuke__Sasuke-crop {
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+.character-Sasuke__ability-crop {
+  position: relative;
+  overflow: hidden;
+}
+
+.Sasuke-crop__gallery {
+  left: 0;
+  bottom: 0;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+}
+
+.ability-crop__gallery {
+  bottom: 0;
+  left: 0;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+}
