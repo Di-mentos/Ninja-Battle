@@ -58,8 +58,8 @@ a, a:hover {
   text-decoration: none;
 }
 
-body {
-  min-height: 100vh;
+.wrapper {
+  height: 70vh;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
