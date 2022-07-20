@@ -1,5 +1,5 @@
 var sasuke = {
-	heroAbilities: ["chidoriNagashi", "chidoriRun"],
+	heroAbilities: ["chidoriNagashi", "chidoriRun", "fireBall"],
 	aCrop: document.getElementsByClassName("character-Sasuke__ability-crop ability-crop")[0],
 	aGallery: document.getElementsByClassName("ability-crop__gallery gallery")[0],
 
@@ -72,6 +72,12 @@ var sasuke = {
 
 	abilityChidoriRunWidth: [21, 21, 34, 40, 40, 38, 38, 40, 86, 80, 75, 75, 91, 89, 86, 80, 75, 75, 91, 89],
 	abilityChidoriRunHeight: [15, 15, 23, 24, 27, 31, 28, 27, 41, 51, 47, 47, 48, 39, 41, 51, 47, 47, 48, 39],
+
+	valuesFireballWidth: [25, 26, 25, 25, 27, 27, 27, 26, 29, 29],
+	valuesFireballHeight: [40, 40, 40, 40, 42, 40, 41, 35, 34, 34],
+
+	abilityFireBallWidth: [10, 10, 16, 32, 44, 56, 59, 57, 59, 56, 59, 58, 59, 57, 59, 56, 59, 58],
+	abilityFireBallHeight: [6, 6, 10, 20, 30, 35, 39, 41, 39, 38, 36, 37, 39, 41, 39, 38, 36, 37],
 
 	sasukeStance: function(way){
 		animateMovement(this.valuesStanceWidth, this.valuesStanceHeight, this, "Sasuke", "stance", way, 150);
@@ -151,7 +157,6 @@ var sasuke = {
 	sasukeChidoriRun: function(way){
 		animateMovement(this.valuesChidoriRunWidth, this.valuesChidoriRunHeight, this, "Sasuke", "chidoriRun", way, 350);
 	},
-
 	chidoriRun: function(way){
 		if(way === "right"){
 			drawAbility(this.abilityChidoriRunWidth, this.abilityChidoriRunHeight, this, "Sasuke", "chidoriRun", "chidoriRight/", 
@@ -160,6 +165,19 @@ var sasuke = {
 		else if(way == "left"){
 			drawAbility(this.abilityChidoriRunWidth, this.abilityChidoriRunHeight, this, "Sasuke", "chidoriRun", "chidoriLeft/", 
 						"", "");
+		}
+	},
+
+	sasukeFireBall: function(way){
+		animateMovement(this.valuesFireballWidth, this.valuesFireballHeight, this, "Sasuke", "fireBall", way, 350);
+	},
+
+	fireBall: function(way){
+		if(way == "right"){
+			drawAbility(this.abilityFireBallWidth, this.abilityFireBallHeight, this, "Sasuke", "fireBall", "fireBallRight/", "", "");
+		}
+		else if(way == "left"){
+			drawAbility(this.abilityFireBallWidth, this.abilityFireBallHeight, this, "Sasuke", "fireBall", "fireBallLeft/", "", "");
 		}
 	}
 };
@@ -194,13 +212,17 @@ function drawAbility(widthValues, heightValues, hero, heroName, type, way, folde
 
 	if(type === "chidoriNagashi"){
 		//console.log("Up!");
-		crop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(crop).height)) -2) + "px";
+		crop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(crop).height)) -4) + "px";
 		crop.style.opacity = "0";
 	}
 	else if(type == "chidoriRun"){
 		crop.style.opacity = "0";
 		crop.style.margin = "0 auto";
 		crop.style.marginTop = "-" + parseInt(window.getComputedStyle(crop).height) + "px";
+	}
+	else if(type == "fireBall"){
+		crop.style.opacity = "0";
+		hero.aCrop.style.marginTop = "-" + parseInt(window.getComputedStyle(hero.aCrop).height) + "px";
 	}
 }
 
@@ -213,10 +235,83 @@ function chooseAbility(hero, type, milliseconds, imageCount, imageMoving, way){
 		showChidoriRun(hero, milliseconds, imageCount, imageMoving, way);
 		//console.log("This is chidori!");
 	}
+	else if(type == "fireBall"){
+		showFireBall(hero, milliseconds, imageCount, imageMoving, way);
+		// console.log("A fireBall!");
+	}
+}
+
+function showFireBall(hero, milliseconds, imageCount, imageMoving, way){
+	var p = 0;
+	if(imageCount >=6 && imageCount <= 8){
+		hero.aCrop.style.opacity = "1";
+		drawAbilityFrame(hero);
+		hero.aCrop.style.marginTop = "-" + parseInt(window.getComputedStyle(hero.aCrop).height) + "px";
+		if(imageCount == 6){
+			abilityLeftCoord(hero, way, "104px", "-31px");
+			hero.aCrop.style.top = "-87px";
+		}
+		else if(imageCount == 7){
+			abilityLeftCoord(hero, way, "116px", "-98px");
+			hero.aCrop.style.top = "-60px";
+		}
+		else if(imageCount == 8){
+			abilityLeftCoord(hero, way, "142px", "-142px");
+			hero.aCrop.style.top = "-55px";
+		}
+
+		if(imageCount != 8){
+			setTimeout(function(){
+				drawAbilityFrame(hero);
+				hero.aCrop.style.marginTop = "-" + parseInt(window.getComputedStyle(hero.aCrop).height) + "px";
+				if(imageCount == 6){
+					abilityLeftCoord(hero, way, "105px", "-48px");
+					hero.aCrop.style.top = "-82px";
+				}
+				else if(imageCount == 7){
+					abilityLeftCoord(hero, way, "125px", "-123px");
+					hero.aCrop.style.top = "-55px";
+				}
+			}, milliseconds/2);
+		}
+		else if(imageCount == 8){
+			var interval1 = setInterval(function(){
+				if(hero.imageAbilityPrev == 17){
+					hero.aCrop.style.opacity = "0";
+					hero.imageAbilityNext = 1;
+					hero.imageAbilityPrev = 0;
+					hero.moveAGallery = 0;
+					hero.aGallery.style.transform = "translateX(-" + hero.moveAGallery + "px)";
+					hero.aCrop.style.width = window.getComputedStyle(hero.aGallery.children[0]).width;
+					hero.aCrop.style.height = window.getComputedStyle(hero.aGallery.children[0]).height;
+
+					hero.aCrop.style.marginTop = "-" + parseInt(window.getComputedStyle(hero.aCrop).height) + "px";
+					hero.aCrop.style.left = "0px";
+					hero.aCrop.style.top = "0px";
+					clearInterval(interval1);
+				}
+				else{
+					drawAbilityFrame(hero);
+					hero.aCrop.style.marginTop = "-" + parseInt(window.getComputedStyle(hero.aCrop).height) + "px";
+					if(way == "right"){
+						p+=20;
+					}
+					else if(way == "left"){
+						p-=20;		
+					}
+					hero.aCrop.style.left = (parseInt(window.getComputedStyle(hero.aCrop).left) + p) + "px";
+					
+					p = 0;
+				}
+				console.log(hero.imageAbilityPrev);
+			}, milliseconds/2);
+		}
+	}
+	console.log(imageCount);
 }
 
 // Функция выбирает одну из координат left в зависимости от переданного way
-function chidoriLeftCoord(hero, way, coordRight, coordLeft){
+function abilityLeftCoord(hero, way, coordRight, coordLeft){
 	if(way == "right"){
 		hero.aCrop.style.left = coordRight;
 	}
@@ -226,10 +321,10 @@ function chidoriLeftCoord(hero, way, coordRight, coordLeft){
 }
 
 function showChidoriRun(hero, milliseconds, imageCount, imageMoving, way){
-	if(imageCount == 0 && imageMoving == 0){
+	if(imageCount == -1){
 		//console.log("Both are 0!");
 		hero.imageAbilityPrev = 0;
-		hero.imageAbilityNext = 0;
+		hero.imageAbilityNext = 1;
 		hero.aCrop.style.width = window.getComputedStyle(hero.aGallery.children[hero.imageAbilityNext]).width;
 		hero.aCrop.style.height = window.getComputedStyle(hero.aGallery.children[hero.imageAbilityNext]).height;
 
@@ -240,7 +335,6 @@ function showChidoriRun(hero, milliseconds, imageCount, imageMoving, way){
 		hero.aCrop.style.top = "0px";
 
 		//console.log("imageMoving: " + hero.imageAbilityNext + "\nimageCount: " + hero.imageAbilityPrev);
-		hero.imageAbilityNext = 1;
 	}
 
 	if(imageCount >= 2 && imageCount <= 12){
@@ -251,7 +345,7 @@ function showChidoriRun(hero, milliseconds, imageCount, imageMoving, way){
 			hero.aCrop.style.marginTop = "-" + parseInt(window.getComputedStyle(hero.aCrop).height) + "px";
 
 			hero.aCrop.style.top = "10px";
-			chidoriLeftCoord(hero, way, "20px", "-20px"); //Для way == right, и way == left
+			abilityLeftCoord(hero, way, "20px", "-20px"); //Для way == right, и way == left
 			/*if(way == "right"){
 				hero.aCrop.style.left = "20px";
 			}
@@ -267,11 +361,11 @@ function showChidoriRun(hero, milliseconds, imageCount, imageMoving, way){
 			}
 
 			if(imageCount == 3 || imageCount == 4 || imageCount == 5){
-				chidoriLeftCoord(hero, way, "10px", "-10px");
+				abilityLeftCoord(hero, way, "10px", "-10px");
 			}
 		}
 		else if(imageCount == 6){
-			chidoriLeftCoord(hero, way, "-30px", "30px");
+			abilityLeftCoord(hero, way, "-30px", "30px");
 		}
 		else if(imageCount >= 7 && imageCount <= 12){
 			drawAbilityFrame(hero);		
@@ -279,15 +373,15 @@ function showChidoriRun(hero, milliseconds, imageCount, imageMoving, way){
 			// Для молнии сбоку от героя
 			if(imageCount == 7 || imageCount == 8){
 				hero.aCrop.style.top = "20px";
-				chidoriLeftCoord(hero, way, "-74px", "74px");
+				abilityLeftCoord(hero, way, "-74px", "74px");
 			}
 			else if(imageCount == 10 || imageCount == 11){
 				hero.aCrop.style.top = "4px";
-				chidoriLeftCoord(hero, way, "-14px", "14px");
+				abilityLeftCoord(hero, way, "-14px", "14px");
 			}
 			else{
 				hero.aCrop.style.top = "-8px";
-				chidoriLeftCoord(hero, way, "-30px", "30px");
+				abilityLeftCoord(hero, way, "-30px", "30px");
 			}
 			
 			setTimeout(function(){
@@ -295,7 +389,7 @@ function showChidoriRun(hero, milliseconds, imageCount, imageMoving, way){
 				hero.aCrop.style.marginTop = "-" + parseInt(window.getComputedStyle(hero.aCrop).height) + "px";
 				if(imageCount == 9 || imageCount == 12){
 					hero.aCrop.style.top = "-30px";
-					chidoriLeftCoord(hero, way, "-15px", "15px");
+					abilityLeftCoord(hero, way, "-15px", "15px");
 				}
 				
 			}, milliseconds/2);
@@ -310,34 +404,34 @@ function showChidoriRun(hero, milliseconds, imageCount, imageMoving, way){
 function showChidoriNagashi(hero, milliseconds, imageCount, imageMoving){
 	var e = 1;
 	// console.log(imageCount);
+	if(imageCount ==  -1){
+		hero.aCrop.style.opacity = "0";
+		hero.imageAbilityPrev = 0;
+		hero.imageAbilityNext = 1;
+		hero.aCrop.style.width = window.getComputedStyle(hero.aGallery.children[hero.imageAbilityNext]).width;
+		hero.aCrop.style.height = window.getComputedStyle(hero.aGallery.children[hero.imageAbilityNext]).height;
+		hero.moveAGallery = 0;
+		hero.aGallery.style.transform = "translateX(-" + hero.moveAGallery + "px)";
+		hero.aCrop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(hero.aCrop).height)) -4) + "px";
+
+		//console.log("imageMoving: " + hero.imageAbilityNext + "\nimageCount: " + hero.imageAbilityPrev);
+	}
 	if(imageCount == 0){
 		hero.aCrop.style.opacity = "1";
-		if(imageCount == 0 && imageMoving == 0){
-			hero.aCrop.style.opacity = "0";
-			hero.imageAbilityPrev = 0;
-			hero.imageAbilityNext = 1;
-			hero.aCrop.style.width = window.getComputedStyle(hero.aGallery.children[hero.imageAbilityNext]).width;
-			hero.aCrop.style.height = window.getComputedStyle(hero.aGallery.children[hero.imageAbilityNext]).height;
-			hero.moveAGallery = 0;
-			hero.aGallery.style.transform = "translateX(-" + hero.moveAGallery + "px)";
-			hero.aCrop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(hero.aCrop).height)) -2) + "px";
-
-			//console.log("imageMoving: " + hero.imageAbilityNext + "\nimageCount: " + hero.imageAbilityPrev);
-		}
 	}
 	if(imageCount >= 1 && imageCount <= 14){
 		if(imageCount >= 9 && imageCount <= 12){
 			hero.aCrop.style.opacity = "1";
 			console.log("imageMoving: " + hero.imageAbilityNext + "\nimageCount: " + hero.imageAbilityPrev);
 			drawAbilityFrame(hero);
-			hero.aCrop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(hero.aCrop).height)) -2) + "px";
+			hero.aCrop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(hero.aCrop).height)) -4) + "px";
 			console.log("e = " + e);
 
 			setTimeout(function(){
 				e++;
 				console.log("e = " + e);
 				drawAbilityFrame(hero);
-				hero.aCrop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(hero.aCrop).height)) -2) + "px";
+				hero.aCrop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(hero.aCrop).height)) -4) + "px";
 
 				e = 1;
 			}, milliseconds/2);
@@ -345,7 +439,7 @@ function showChidoriNagashi(hero, milliseconds, imageCount, imageMoving){
 		else if(imageCount >=1 && imageCount <=7){
 			drawAbilityFrame(hero);
 			// Смещение кропа вверх на значение его высоты, которое постоянно меняется
-			hero.aCrop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(hero.aCrop).height)) -2) + "px";
+			hero.aCrop.style.marginTop = "-" + ((parseInt(window.getComputedStyle(hero.aCrop).height)) -4) + "px";
 		}
 		else{
 			hero.aCrop.style.opacity = "0";
@@ -423,10 +517,13 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 				imageMoving, то и отобразится, и сместится 1-е изображение; а так никакого смещения галлереи не будет*/
 				imageCount = -1;
 				imageMoving = 0;
+				//Подстраивание кропа под размер 1-го элемента в конце анимации
+				crop.style.width = window.getComputedStyle(gallery.children[imageMoving]).width;
+				crop.style.height = window.getComputedStyle(gallery.children[imageMoving]).height;
 				hero.moveHGallery = 0;
 				gallery.style.transform = "translateX(-" + hero.moveHGallery + "px)";
 				clearInterval(interval);
-				newAnimation(hero);
+				//newAnimation(hero);
 			}
 		}
 
@@ -472,10 +569,13 @@ function newAnimation(hero, type){
 // sasuke.sasukeAttack3("right");
 // sasuke.sasukeKnockedDown("left");
 // sasuke.sasukeAttackUp("right");
-sasuke.sasukeAttackRun("right");
+// sasuke.sasukeAttackRun("right");
 // sasuke.sasukeAttackJump();
 // sasuke.sasukeWeaponThrow();
 // sasuke.sasukeWeaponThrowJump("left");
 // sasuke.sasukeWin("right");
-// sasuke.sasukeChidoriNagashi("right");
-// sasuke.sasukeChidoriRun("left");
+// sasuke.sasukeChidoriNagashi("left");
+// sasuke.sasukeChidoriRun("right");
+setTimeout(function(){
+	sasuke.sasukeFireBall("right");
+}, 1000);
