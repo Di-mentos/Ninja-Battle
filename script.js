@@ -130,7 +130,7 @@ var sasuke = {
 	},
 
 	sasukeAttackJump: function(way){
-		animateMovement(this.valuesAttackJumpWidth, this.valuesAttackJumpHeight, this, "Sasuke", "attackJump", way, 300);
+		animateMovement(this.valuesAttackJumpWidth, this.valuesAttackJumpHeight, this, "Sasuke", "attackJump", way, 500);
 	},
 
 	sasukeWeaponThrow: function(way){
@@ -472,16 +472,16 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 	var imageCount = 0; //Индекс текущей картинки, которую нужно сместить; впоследствии получает расстояние смещения
 	var pixelIndex = 4;
 
-	if(gallery.childElementCount != 0){
+	/*if(gallery.childElementCount != 0){
 		while(gallery.childElementCount != 0){
 			//console.log(gallery.children[0].alt + " removed");
 			gallery.removeChild(gallery.children[0]);
 		}
-	}
+	}*/
 
 /*	widthValues и gallery являются как бы "параллельными массивами", которые имеют одинаковую длину, и работая в цикле одним и тем же 
 	элементом*/	
-	for(var i=0; i<widthValues.length; i++){
+	/*for(var i=0; i<widthValues.length; i++){
 		var image = new Image();	
 		image.src = "images/" + heroName + "/" + type + "/" + way + "/" + (i+1) + ".png";
 		// widthValues приносит готовые значения ширины фреймов
@@ -493,7 +493,57 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 		image.className = "Sasuke-crop__" + type + " image";
 		gallery.appendChild(image);
 		// Св-ва naturalWidth и naturalHeight позволяют получить актуальную ширину и высоту изображения
+	}*/
+	if(gallery.childElementCount == 0){
+		for(var i=0; i<widthValues.length; i++){
+			var image = new Image();	
+			image.src = "images/" + heroName + "/" + type + "/" + way + "/" + (i+1) + ".png";
+			// widthValues приносит готовые значения ширины фреймов
+			image.style.width = (widthValues[i] * pixelIndex) + "px";
+			image.style.height = (heightValues[i] * pixelIndex) + "px";
+
+			// Метод slice(start, end) отрезает часть строки с индекса start по end; здесь: убираем 1-й символ
+			image.alt = type.charAt(0).toUpperCase() + type.slice(1) + (i+1);
+			image.className = "Sasuke-crop__" + type + " image";
+			gallery.appendChild(image);
+		}
+		//console.log("gallery length is 0!");
 	}
+	else if(gallery.childElementCount != 0){
+		if(gallery.childElementCount > widthValues.length){
+			while(gallery.childElementCount != widthValues.length){
+				//console.log(gallery.children[0].alt + " removed");
+				gallery.removeChild(gallery.children[widthValues.length]);
+			}
+			for(var i=0; i<widthValues.length; i++){
+				var image = gallery.children[i];
+				image.src = "images/" + heroName + "/" + type + "/" + way + "/" + (i+1) + ".png";
+				image.style.width = (widthValues[i] * pixelIndex) + "px";
+				image.style.height = (heightValues[i] * pixelIndex) + "px";
+
+				// Метод slice(start, end) отрезает часть строки с индекса start по end; здесь: убираем 1-й символ
+				image.alt = type.charAt(0).toUpperCase() + type.slice(1) + (i+1);
+				image.className = "Sasuke-crop__" + type + " image";
+			}
+		}
+		else if(gallery.childElementCount < widthValues.length){
+			while(gallery.childElementCount != widthValues.length){
+				var elem = new Image();
+				gallery.appendChild(elem);
+			}
+			for(var i=0; i<widthValues.length; i++){
+				var image = gallery.children[i];
+				image.src = "images/" + heroName + "/" + type + "/" + way + "/" + (i+1) + ".png";
+				image.style.width = (widthValues[i] * pixelIndex) + "px";
+				image.style.height = (heightValues[i] * pixelIndex) + "px";
+
+				// Метод slice(start, end) отрезает часть строки с индекса start по end; здесь: убираем 1-й символ
+				image.alt = type.charAt(0).toUpperCase() + type.slice(1) + (i+1);
+				image.className = "Sasuke-crop__" + type + " image";
+			}
+		}
+	}
+	
 	crop.style.width = (widthValues[0] * pixelIndex) + "px";
 	crop.style.height = (heightValues[0] * pixelIndex) + "px";
 	
@@ -523,7 +573,7 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 				hero.moveHGallery = 0;
 				gallery.style.transform = "translateX(-" + hero.moveHGallery + "px)";
 				clearInterval(interval);
-				//newAnimation(hero);
+				newAnimation(hero);
 			}
 		}
 
@@ -570,12 +620,10 @@ function newAnimation(hero, type){
 // sasuke.sasukeKnockedDown("left");
 // sasuke.sasukeAttackUp("right");
 // sasuke.sasukeAttackRun("right");
-// sasuke.sasukeAttackJump();
+sasuke.sasukeAttackJump("right");
 // sasuke.sasukeWeaponThrow();
 // sasuke.sasukeWeaponThrowJump("left");
 // sasuke.sasukeWin("right");
 // sasuke.sasukeChidoriNagashi("left");
-// sasuke.sasukeChidoriRun("right");
-setTimeout(function(){
-	sasuke.sasukeFireBall("right");
-}, 1000);
+// sasuke.sasukeChidoriRun("left");
+// sasuke.sasukeFireBall("right");
