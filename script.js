@@ -10,6 +10,8 @@ var keys = {
 };
 
 var sasuke = {
+	index: 0,
+
 	name: "Sasuke",
 	heroAbilities: ["chidoriNagashi", "chidoriRun", "fireBall"],
 	characterBlock: document.getElementsByClassName("character-Sasuke")[0],
@@ -38,8 +40,8 @@ var sasuke = {
 	valuesJumpWidth: [24, 27, 27, 30, 30, 23],
 	valuesJumpHeight: [44, 41, 40, 43, 43, 28],
 
-	valuesTeleportWidth: [25, 24, 24, 24],
-	valuesTeleportHeight: [39, 38, 40, 41],
+	valuesTeleportWidth: [25, 24, 24, 24, 24, 24, 24, 24, 25],
+	valuesTeleportHeight: [39, 38, 40, 41, 41, 41, 40, 38, 39],
 
 	valuesDamagedWidth: [27, 30],
 	valuesDamagedHeight: [37, 35],
@@ -135,7 +137,7 @@ var sasuke = {
 	moveJump: function(way, imageCount){
 		console.log("Move for jump!");
 		this.getBlockCoords();
-		if(way == "right"){
+		if(way == "right" || way == "left"){
 			if(imageCount == 0 || imageCount == 1){
 				// this.moveValueX += 40;
 				this.moveValueY -= 70;
@@ -150,7 +152,20 @@ var sasuke = {
 	},
 
 	sasukeTeleport: function(way){
-		animateMovement(this.valuesTeleportWidth, this.valuesTeleportHeight, this, "Sasuke", "teleport", way, 200);
+		animateMovement(this.valuesTeleportWidth, this.valuesTeleportHeight, this, "Sasuke", "teleport", way, 150);
+	},
+	moveTeleport: function(way, imageCount){
+		this.getBlockCoords();
+		if(imageCount == 3){
+			if(way == "right"){
+				this.moveValueX += 500;
+			}
+			else if(way == "left"){	
+				// console.log("End!");
+				this.moveValueX -= 500;
+			}
+			this.characterBlock.style.left = this.moveValueX + "px";
+		}	
 	},
 
 	sasukeDamaged: function(way){
@@ -205,7 +220,7 @@ var sasuke = {
 		animateMovement(this.valuesAttack3Width, this.valuesAttack3Height, this, "Sasuke", "attack3", way, 150);
 	},
 	moveAttack3: function(way){
-		console.log("Move attack3!");
+		// console.log("Move attack3!");
 		this.getBlockCoords();
 		if(way == "left"){
 			this.moveValueX -= 40;
@@ -250,7 +265,7 @@ var sasuke = {
 	},
 
 	sasukeChidoriRun: function(way){
-		animateMovement(this.valuesChidoriRunWidth, this.valuesChidoriRunHeight, this, "Sasuke", "chidoriRun", way, 350);
+		animateMovement(this.valuesChidoriRunWidth, this.valuesChidoriRunHeight, this, "Sasuke", "chidoriRun", way, 700);
 	},
 	chidoriRun: function(way){
 		if(way === "right"){
@@ -261,6 +276,14 @@ var sasuke = {
 			drawAbility(this.abilityChidoriRunWidth, this.abilityChidoriRunHeight, this, "Sasuke", "chidoriRun", "chidoriLeft/", 
 						"", "");
 		}
+	},
+	moveChidoriRun: function(way, imageCount){
+		this.getBlockCoords();
+		if(imageCount >= 7 && imageCount <= 13){
+			// console.log("End!");
+			this.moveValueX += 20;
+		}
+		this.characterBlock.style.left = this.moveValueX + "px";
 	},
 
 	sasukeFireBall: function(way){
@@ -327,7 +350,7 @@ function drawAbility(widthValues, heightValues, hero, heroName, type, way, folde
 }
 
 function chooseAbility(hero, type, milliseconds, imageCount, imageMoving, way){
-	if(type === "chidoriNagashi"){
+	if(type == "chidoriNagashi"){
 		//console.log("Holly molly! This is " + type + "!");
 		showChidoriNagashi(hero, milliseconds, imageCount, imageMoving);
 	}
@@ -562,16 +585,30 @@ function drawAbilityFrame(hero){
 	// console.log("imageMoving: " + hero.imageAbilityNext + "\nimageCount: " + hero.imageAbilityPrev);
 }
 
-document.addEventListener('keydown', function(){
+/*Событие нажатяи клавиши срабатыавет, после чего удаляется, таким образом оно вызывается только 1 раз, если клавиша нажата и держится*/
+document.addEventListener('keydown', function keyPress(){
 	keys[event.keyCode] = true;
 	sasuke.isPressed = true;
+	sasuke.index++;
 	// console.log(event.keyCode + " pressed!");
+	console.log(sasuke.index);
+	document.removeEventListener('keydown', keyPress);
 })
 
+// При отжатии клавиши снова добавляется событие нажатия клавиши
 document.addEventListener('keyup', function(){
 	keys[event.keyCode] = false;
 	sasuke.isPressed = false;
+	sasuke.index = 0;
 	// console.log(event.keyCode + " is false now");
+	document.addEventListener('keydown', function keyPress(){
+		keys[event.keyCode] = true;
+		sasuke.isPressed = true;
+		sasuke.index++;
+		// console.log(event.keyCode + " pressed!");
+		console.log(sasuke.index);
+		document.removeEventListener('keydown', keyPress);
+	});
 })
 
 // Ф-я по вызову анимаций при нажатии на клавиши
@@ -600,6 +637,14 @@ function chooseAnimation(way){
 		console.log("Pressed T!");
 		sasuke.sasukeAttack3(way);
 	}
+	else if(keys["68"]){
+		console.log("Pressed D!");
+		sasuke.sasukeTeleport(way);
+	}
+	else if(keys["49"]){
+		console.log("Pressed 1!");
+		sasuke.sasukeChidoriRun(way);
+	}
 }
 
 // Ф-я, определяющая передвижения во время анимаций
@@ -627,6 +672,12 @@ function chooseMoveValue(hero, type, way, imageCount){
 	else if(type == "jump"){
 		// console.log("Time to jump!");
 		hero.moveJump(way, imageCount);
+	}
+	else if(type == "teleport"){
+		hero.moveTeleport(way, imageCount);
+	}
+	else if(type == "chidoriRun"){
+		hero.moveChidoriRun(way, imageCount);
 	}
 }
 
@@ -741,6 +792,9 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 
 		// На каждой итерации setInterval проверка, есть ли у какой то "клавиши" значение true
 		if(hero.isPressed){
+			/*Если не присвоить false это св-ву, то при удержании клавиши будет бесконечное вхождение в это условие, 
+			и анимация "застрянет"*/
+			sasuke.isPressed = false;
 			imageCount = -1;
 			imageMoving = 0;
 			crop.style.width = window.getComputedStyle(gallery.children[imageMoving]).width;
@@ -750,6 +804,7 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 			// console.log("End!");
 			
 			clearInterval(interval);
+			// console.log("new animation!");
 			chooseAnimation(way);
 		}
 
