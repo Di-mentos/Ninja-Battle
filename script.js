@@ -12,6 +12,7 @@ var keys = {
 var sasuke = {
 	index: 0,
 	negativeFlag: false,
+	clientWidth: document.documentElement.clientWidth,
 
 	name: "Sasuke",
 	heroAbilities: ["chidoriNagashi", "chidoriRun", "fireBall"],
@@ -123,7 +124,7 @@ var sasuke = {
 			}
 		}
 		else if(this.characterLeft < 50){
-			console.log(this.characterLeft);
+			// console.log(this.characterLeft);
 			if(imageCount == 0 || imageCount == 3){
 				this.moveValueX += 40;
 			}
@@ -214,27 +215,45 @@ var sasuke = {
 	},
 
 	sasukeTeleport: function(way){
-		animateMovement(this.valuesTeleportWidth, this.valuesTeleportHeight, this, "Sasuke", "teleport", way, 150);
+		animateMovement(this.valuesTeleportWidth, this.valuesTeleportHeight, this, "Sasuke", "teleport", way, 100);
 	},
 	moveTeleport: function(way, imageCount){
-		this.getBlockCoords();
+		// this.getBlockCoords();
+		var moveValueTP = 500;
+		
 		if(imageCount == 3){
 			if(way == "right"){
-				this.moveValueX += 500;
+				if(this.negativeFlag){
+					this.characterBlock.style.alignSelf = "flex-start";
+					this.moveValueX = document.documentElement.clientWidth + this.moveValueX;
+					this.negativeFlag = false;
+				}
+
+				this.moveValueX += moveValueTP;	
 			}
 			else if(way == "left"){	
 				// console.log("End!");
-				this.moveValueX -= 500;
+				if(!this.negativeFlag){
+					this.characterBlock.style.alignSelf = "flex-end";
+					this.moveValueX = this.moveValueX - document.documentElement.clientWidth;
+					this.negativeFlag = true;
+				}
+
+				this.moveValueX -= moveValueTP;
 			}
+
 			this.characterBlock.style.left = this.moveValueX + "px";
-		}	
+			this.getBlockCoords();
+
+			constraintTeleport(this, moveValueTP);
+		}
 	},
 
 	sasukeDamaged: function(way){
 		animateMovement(this.valuesDamagedWidth, this.valuesDamagedHeight, this, "Sasuke", "damaged", way, 300);
 	},
 
-	//knockout - нокаут, поражение
+	// knockout - нокаут, поражение
 	sasukeKnockout: function(way){
 		animateMovement(this.valuesKnockoutWidth, this.valuesKnockoutHeight, this, "Sasuke", "knockout", way, 300);
 	},
@@ -247,17 +266,7 @@ var sasuke = {
 	sasukeAttack1: function(way){
 		animateMovement(this.valuesAttack1Width, this.valuesAttack1Height, this, "Sasuke", "attack1", way, 150);
 	},
-	moveAttack1: function(way){
-		/*this.getBlockCoords();
-		if(way == "left"){
-			this.moveValueX -= 10;	
-		}
-		else if(way == "right"){
-			this.moveValueX += 10;
-		}
-		this.hCrop.style.left = this.moveValueX + "px";*/
-	},
-
+	
 	sasukeAttack2: function(way){
 		animateMovement(this.valuesAttack2Width, this.valuesAttack2Height, this, "Sasuke", "attack2", way, 150);
 	},
@@ -273,7 +282,6 @@ var sasuke = {
 			else{
 				this.moveValueX += 20;
 			}
-			
 		}
 		this.characterBlock.style.left = this.moveValueX + "px";
 	},
@@ -384,6 +392,155 @@ var sasuke = {
 		this.characterRight = this.characterBlock.getBoundingClientRect().right;
 	}
 };
+
+// Ф-я "невыхода" за экран при телепорте
+function constraintTeleport(hero, moveValueTP){
+	if(hero.characterRight > hero.clientWidth - 50){
+		var borderValue1 = (hero.clientWidth - 50) + moveValueTP;
+		var borderValue2 = (hero.clientWidth - 50) + Math.floor((moveValueTP/2) + (moveValueTP/4));
+		var borderValue3 = (hero.clientWidth - 50) + Math.floor(moveValueTP/2);
+		var borderValue4 = (hero.clientWidth - 50) + Math.floor(moveValueTP - ((moveValueTP/2) + (moveValueTP/4)));
+
+		if(hero.characterRight >= borderValue1){
+			hero.moveValueX -= moveValueTP;
+			if(hero.characterRight > borderValue1){
+				console.log("Greater than 1!");
+			}
+		}
+		else if(hero.characterRight < borderValue1 && hero.characterRight > borderValue2){
+			console.log("between 1 and 0.75");
+
+			var middleValue = Math.floor((moveValueTP + ((moveValueTP/2) + (moveValueTP/4)))/2);
+			if(hero.characterRight > middleValue){
+				hero.moveValueX -= Math.floor((middleValue + moveValueTP)/2);
+			}
+			else if(hero.characterRight < middleValue){
+				hero.moveValueX -= Math.floor((middleValue + ((moveValueTP/2) + (moveValueTP/4)))/2);
+			}
+			else{
+				hero.moveValueX -= middleValue;
+			}
+		}
+		else if(hero.characterRight < borderValue2 && hero.characterRight > borderValue3){
+			console.log("between 0.75 and 0.5");
+
+			var middleValue = Math.floor(((moveValueTP/2) + ((moveValueTP/2) + (moveValueTP/4)))/2);
+			if(hero.characterRight > middleValue){
+				hero.moveValueX -= Math.floor((middleValue + ((moveValueTP/2) + (moveValueTP/4)))/2);
+			}
+			else if(hero.characterRight < middleValue){
+				hero.moveValueX -= Math.floor((middleValue + (moveValueTP/2))/2);
+			}
+			else{
+				hero.moveValueX -= middleValue;
+			}
+		}
+		else if(hero.characterRight < borderValue3 && hero.characterRight > borderValue4){
+			console.log("between 0.25 and 0.5");
+
+			var middleValue = Math.floor(((moveValueTP - ((moveValueTP/2) + (moveValueTP/4))) + (moveValueTP/2))/2);
+			if(hero.characterRight > middleValue){
+				hero.moveValueX -= Math.floor((middleValue + (moveValueTP/2))/2);
+			}
+			else if(hero.characterRight < middleValue){
+				hero.moveValueX -= Math.floor((middleValue + (moveValueTP - ((moveValueTP/2) + (moveValueTP/4))))/2);
+			}
+			else{
+				hero.moveValueX -= middleValue;
+			}
+		}
+		else if(hero.characterRight < borderValue4){
+			console.log("between 0 and 0.25");
+
+			var middleValue = Math.floor((moveValueTP - ((moveValueTP/2) + (moveValueTP/4)))/2);
+			if(hero.characterRight > middleValue){
+				hero.moveValueX -= Math.floor((middleValue + (moveValueTP - ((moveValueTP/2) + (moveValueTP/4))))/2);
+			}
+			else if(hero.characterRight < middleValue){
+				hero.moveValueX -= Math.floor(middleValue/2);
+			}
+			else{
+				hero.moveValueX -= middleValue;
+			}
+		}
+
+		hero.characterBlock.style.left = hero.moveValueX + "px";
+		// console.log("Greater than clientWidth!");
+	}
+	else if(hero.characterLeft < 50){
+		var borderValue1 = 50 - moveValueTP;
+		var borderValue2 = 50 - Math.floor((moveValueTP/2) + (moveValueTP/4));
+		var borderValue3 = 50 - Math.floor(moveValueTP/2);
+		var borderValue4 = 50 - Math.floor(moveValueTP - ((moveValueTP/2) + (moveValueTP/4)));
+
+		if(hero.characterLeft <= borderValue1){
+			// console.log("Greater than -1!");
+			hero.moveValueX += moveValueTP;
+			console.log(hero.moveValueX);
+			if(hero.characterLeft < borderValue1){
+				console.log("Greater than -1!");
+			}
+		}
+		else if(hero.characterLeft > borderValue1 && hero.characterLeft < borderValue2){
+			console.log("between -1 and -0.75");
+
+			var middleValue = Math.floor((moveValueTP + ((moveValueTP/2) + (moveValueTP/4)))/2);
+			if(hero.characterLeft < middleValue){
+				hero.moveValueX += Math.floor((middleValue + moveValueTP)/2);
+			}
+			else if(hero.characterLeft > middleValue){
+				hero.moveValueX += Math.floor((middleValue + ((moveValueTP/2) + (moveValueTP/4)))/2);
+			}
+			else{
+				hero.moveValueX += middleValue;
+			}
+		}
+		else if(hero.characterLeft > borderValue2 && hero.characterLeft < borderValue3){
+			console.log("between -0.75 and -0.5");
+
+			var middleValue = Math.floor(((moveValueTP/2) + ((moveValueTP/2) + (moveValueTP/4)))/2);
+			if(hero.characterLeft < middleValue){
+				hero.moveValueX += Math.floor((middleValue + ((moveValueTP/2) + (moveValueTP/4)))/2);
+			}
+			else if(hero.characterLeft > middleValue){
+				hero.moveValueX += Math.floor((middleValue + (moveValueTP/2))/2);
+			}
+			else{
+				hero.moveValueX += middleValue;
+			}
+		}
+		else if(hero.characterLeft > borderValue3 && hero.characterLeft < borderValue4){
+			console.log("between -0.25 and -0.5");
+
+			var middleValue = Math.floor(((moveValueTP - ((moveValueTP/2) + (moveValueTP/4))) + (moveValueTP/2))/2);
+			if(hero.characterLeft < middleValue){
+				hero.moveValueX += Math.floor((middleValue + (moveValueTP/2))/2);
+			}
+			else if(hero.characterLeft > middleValue){
+				hero.moveValueX += Math.floor((middleValue + (moveValueTP - ((moveValueTP/2) + (moveValueTP/4))))/2);
+			}
+			else{
+				hero.moveValueX += middleValue;
+			}
+		}
+		else if(hero.characterLeft > borderValue4){
+			console.log("between 0 and -0.25");
+
+			var middleValue = Math.floor((moveValueTP - ((moveValueTP/2) + (moveValueTP/4)))/2);
+			if(hero.characterLeft < middleValue){
+				hero.moveValueX += Math.floor((middleValue + (moveValueTP - ((moveValueTP/2) + (moveValueTP/4))))/2);
+			}
+			else if(hero.characterLeft > middleValue){
+				hero.moveValueX += Math.floor(middleValue/2);
+			}
+			else{
+				hero.moveValueX += middleValue;
+			}
+		}
+
+		hero.characterBlock.style.left = hero.moveValueX + "px";
+	}
+}
 
 // Функция прорисовки умения
 function drawAbility(widthValues, heightValues, hero, heroName, type, way, folder1, folder2){
@@ -733,9 +890,9 @@ function chooseMoveValue(hero, type, way, imageCount){
 	if(type == "run"){
 		hero.moveRun(way, imageCount);
 	}
-	else if(type == "attack1"){
+	/*else if(type == "attack1"){
 		hero.moveAttack1(way);
-	}
+	}*/
 	else if(type == "attack2"){
 		if((imageCount >= 2 && imageCount <= 3) || imageCount == 4){
 			hero.moveAttack2(way, imageCount);
