@@ -42,8 +42,8 @@ var sasuke = {
 	valuesRunWidth: [39, 32, 36, 38, 32, 37],
 	valuesRunHeight: [29, 29, 29, 29, 29, 29],
 
-	valuesJumpWidth: [24, 27, 27, 30, 30, 23],
-	valuesJumpHeight: [44, 41, 40, 43, 43, 28],
+	valuesJumpWidth: [24, 27, 27, 27, 30, 30, 30, 23],
+	valuesJumpHeight: [44, 41, 40, 40, 43, 43, 43, 28],
 
 	valuesTeleportWidth: [25, 24, 24, 24, 24, 24, 24, 24, 25],
 	valuesTeleportHeight: [39, 38, 40, 41, 41, 41, 40, 38, 39],
@@ -191,21 +191,22 @@ var sasuke = {
 			}
 		}*/
 
+		// console.log(this.moveValueX);
 		this.characterBlock.style.left = this.moveValueX + "px";
 	},
 
 	sasukeJump: function(way){
-		animateMovement(this.valuesJumpWidth, this.valuesJumpHeight, this, "Sasuke", "jump", way, 150);
+		animateMovement(this.valuesJumpWidth, this.valuesJumpHeight, this, "Sasuke", "jump", way, 100);
 	},
 	moveJump: function(way, imageCount){
 		// console.log("Move for jump!");
 		this.getBlockCoords();
 		if(way == "right" || way == "left"){
-			if(imageCount == 0 || imageCount == 1){
+			if(imageCount >= 0 && imageCount <= 2){
 				// this.moveValueX += 40;
 				this.moveValueY -= 70;
 			}
-			else if(imageCount == 2 || imageCount == 3){
+			else if(imageCount >= 3 && imageCount <= 5){
 				// this.moveValueX += 40;
 				this.moveValueY += 70;
 			}
@@ -245,7 +246,7 @@ var sasuke = {
 			this.characterBlock.style.left = this.moveValueX + "px";
 			this.getBlockCoords();
 
-			constraintTeleport(this, moveValueTP);
+			constraintTeleport(this);
 		}
 	},
 
@@ -394,150 +395,14 @@ var sasuke = {
 };
 
 // Ф-я "невыхода" за экран при телепорте
-function constraintTeleport(hero, moveValueTP){
+function constraintTeleport(hero){
 	if(hero.characterRight > hero.clientWidth - 50){
-		var borderValue1 = (hero.clientWidth - 50) + moveValueTP;
-		var borderValue2 = (hero.clientWidth - 50) + Math.floor((moveValueTP/2) + (moveValueTP/4));
-		var borderValue3 = (hero.clientWidth - 50) + Math.floor(moveValueTP/2);
-		var borderValue4 = (hero.clientWidth - 50) + Math.floor(moveValueTP - ((moveValueTP/2) + (moveValueTP/4)));
-
-		if(hero.characterRight >= borderValue1){
-			hero.moveValueX -= moveValueTP;
-			if(hero.characterRight > borderValue1){
-				console.log("Greater than 1!");
-			}
-		}
-		else if(hero.characterRight < borderValue1 && hero.characterRight > borderValue2){
-			console.log("between 1 and 0.75");
-
-			var middleValue = Math.floor((moveValueTP + ((moveValueTP/2) + (moveValueTP/4)))/2);
-			if(hero.characterRight > middleValue){
-				hero.moveValueX -= Math.floor((middleValue + moveValueTP)/2);
-			}
-			else if(hero.characterRight < middleValue){
-				hero.moveValueX -= Math.floor((middleValue + ((moveValueTP/2) + (moveValueTP/4)))/2);
-			}
-			else{
-				hero.moveValueX -= middleValue;
-			}
-		}
-		else if(hero.characterRight < borderValue2 && hero.characterRight > borderValue3){
-			console.log("between 0.75 and 0.5");
-
-			var middleValue = Math.floor(((moveValueTP/2) + ((moveValueTP/2) + (moveValueTP/4)))/2);
-			if(hero.characterRight > middleValue){
-				hero.moveValueX -= Math.floor((middleValue + ((moveValueTP/2) + (moveValueTP/4)))/2);
-			}
-			else if(hero.characterRight < middleValue){
-				hero.moveValueX -= Math.floor((middleValue + (moveValueTP/2))/2);
-			}
-			else{
-				hero.moveValueX -= middleValue;
-			}
-		}
-		else if(hero.characterRight < borderValue3 && hero.characterRight > borderValue4){
-			console.log("between 0.25 and 0.5");
-
-			var middleValue = Math.floor(((moveValueTP - ((moveValueTP/2) + (moveValueTP/4))) + (moveValueTP/2))/2);
-			if(hero.characterRight > middleValue){
-				hero.moveValueX -= Math.floor((middleValue + (moveValueTP/2))/2);
-			}
-			else if(hero.characterRight < middleValue){
-				hero.moveValueX -= Math.floor((middleValue + (moveValueTP - ((moveValueTP/2) + (moveValueTP/4))))/2);
-			}
-			else{
-				hero.moveValueX -= middleValue;
-			}
-		}
-		else if(hero.characterRight < borderValue4){
-			console.log("between 0 and 0.25");
-
-			var middleValue = Math.floor((moveValueTP - ((moveValueTP/2) + (moveValueTP/4)))/2);
-			if(hero.characterRight > middleValue){
-				hero.moveValueX -= Math.floor((middleValue + (moveValueTP - ((moveValueTP/2) + (moveValueTP/4))))/2);
-			}
-			else if(hero.characterRight < middleValue){
-				hero.moveValueX -= Math.floor(middleValue/2);
-			}
-			else{
-				hero.moveValueX -= middleValue;
-			}
-		}
-
+		hero.moveValueX -= (hero.characterRight - (hero.clientWidth - 50));
 		hero.characterBlock.style.left = hero.moveValueX + "px";
 		// console.log("Greater than clientWidth!");
 	}
 	else if(hero.characterLeft < 50){
-		var borderValue1 = 50 - moveValueTP;
-		var borderValue2 = 50 - Math.floor((moveValueTP/2) + (moveValueTP/4));
-		var borderValue3 = 50 - Math.floor(moveValueTP/2);
-		var borderValue4 = 50 - Math.floor(moveValueTP - ((moveValueTP/2) + (moveValueTP/4)));
-
-		if(hero.characterLeft <= borderValue1){
-			// console.log("Greater than -1!");
-			hero.moveValueX += moveValueTP;
-			console.log(hero.moveValueX);
-			if(hero.characterLeft < borderValue1){
-				console.log("Greater than -1!");
-			}
-		}
-		else if(hero.characterLeft > borderValue1 && hero.characterLeft < borderValue2){
-			console.log("between -1 and -0.75");
-
-			var middleValue = Math.floor((moveValueTP + ((moveValueTP/2) + (moveValueTP/4)))/2);
-			if(hero.characterLeft < middleValue){
-				hero.moveValueX += Math.floor((middleValue + moveValueTP)/2);
-			}
-			else if(hero.characterLeft > middleValue){
-				hero.moveValueX += Math.floor((middleValue + ((moveValueTP/2) + (moveValueTP/4)))/2);
-			}
-			else{
-				hero.moveValueX += middleValue;
-			}
-		}
-		else if(hero.characterLeft > borderValue2 && hero.characterLeft < borderValue3){
-			console.log("between -0.75 and -0.5");
-
-			var middleValue = Math.floor(((moveValueTP/2) + ((moveValueTP/2) + (moveValueTP/4)))/2);
-			if(hero.characterLeft < middleValue){
-				hero.moveValueX += Math.floor((middleValue + ((moveValueTP/2) + (moveValueTP/4)))/2);
-			}
-			else if(hero.characterLeft > middleValue){
-				hero.moveValueX += Math.floor((middleValue + (moveValueTP/2))/2);
-			}
-			else{
-				hero.moveValueX += middleValue;
-			}
-		}
-		else if(hero.characterLeft > borderValue3 && hero.characterLeft < borderValue4){
-			console.log("between -0.25 and -0.5");
-
-			var middleValue = Math.floor(((moveValueTP - ((moveValueTP/2) + (moveValueTP/4))) + (moveValueTP/2))/2);
-			if(hero.characterLeft < middleValue){
-				hero.moveValueX += Math.floor((middleValue + (moveValueTP/2))/2);
-			}
-			else if(hero.characterLeft > middleValue){
-				hero.moveValueX += Math.floor((middleValue + (moveValueTP - ((moveValueTP/2) + (moveValueTP/4))))/2);
-			}
-			else{
-				hero.moveValueX += middleValue;
-			}
-		}
-		else if(hero.characterLeft > borderValue4){
-			console.log("between 0 and -0.25");
-
-			var middleValue = Math.floor((moveValueTP - ((moveValueTP/2) + (moveValueTP/4)))/2);
-			if(hero.characterLeft < middleValue){
-				hero.moveValueX += Math.floor((middleValue + (moveValueTP - ((moveValueTP/2) + (moveValueTP/4))))/2);
-			}
-			else if(hero.characterLeft > middleValue){
-				hero.moveValueX += Math.floor(middleValue/2);
-			}
-			else{
-				hero.moveValueX += middleValue;
-			}
-		}
-
+		hero.moveValueX -= hero.characterLeft - 50;		
 		hero.characterBlock.style.left = hero.moveValueX + "px";
 	}
 }
