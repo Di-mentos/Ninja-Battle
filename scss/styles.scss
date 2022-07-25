@@ -3,8 +3,8 @@
 .wrapper{
 	height: 70vh;
 	display: flex;
-	justify-content: center;
-	align-items: flex-end;
+	flex-direction: column;
+	justify-content: flex-end;
 }
 
 .gallery{
@@ -18,10 +18,16 @@
 }
 
 .character-Sasuke{
+	/* Таким образом если герой смотрит вправо, блок будет расти вправо; если герой смотрит влево, необходимо поставить flex-end, и 
+	инвертировать значение в left*/
+	align-self: flex-start;
+	position: relative;
+
 	&__Sasuke-crop{
 		margin: 0 auto;
 		position: relative;
 		overflow: hidden;
+		transform-origin: right;
 	}
 
 	&__ability-crop{

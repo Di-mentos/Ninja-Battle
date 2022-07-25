@@ -1,3 +1,4 @@
+@charset "UTF-8";
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -63,12 +64,13 @@ a, a:hover {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: end;
-      -ms-flex-align: end;
-          align-items: flex-end;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
 }
 
 .gallery {
@@ -86,10 +88,19 @@ a, a:hover {
       image-rendering: pixelated;
 }
 
+.character-Sasuke {
+  /* Таким образом если герой смотрит вправо, блок будет расти вправо; если герой смотрит влево, необходимо поставить flex-end, и 
+  инвертировать значение в left*/
+  -ms-flex-item-align: start;
+      align-self: flex-start;
+  position: relative;
+}
 .character-Sasuke__Sasuke-crop {
   margin: 0 auto;
   position: relative;
   overflow: hidden;
+  -webkit-transform-origin: right;
+          transform-origin: right;
 }
 .character-Sasuke__ability-crop {
   position: relative;
