@@ -859,7 +859,7 @@ function chooseMoveValue(hero, type, way, imageCount){
 }
 
 function animateMovement(widthValues, heightValues, hero, heroName, type, way, milliseconds){
-	var keysInfo = document.getElementById("keys-info");
+	// var keysInfo = document.getElementById("keys-info");
 	//Обращение по ссылке к объекту, который вызвал метод
 	var crop = hero.hCrop;
 	var gallery = hero.hGallery;
@@ -950,7 +950,7 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 	hero.currentType = type;
 
 	var interval = setInterval(function(){
-		keysInfo.innerHTML = JSON.stringify(keys);
+		// keysInfo.innerHTML = JSON.stringify(keys);
 
 		// На каждой итерации setInterval проверка, есть ли у какой то "клавиши" значение true
 		if(hero.isPressed && imageMoving != gallery.childElementCount){
