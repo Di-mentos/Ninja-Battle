@@ -860,6 +860,7 @@ function chooseMoveValue(hero, type, way, imageCount){
 
 function animateMovement(widthValues, heightValues, hero, heroName, type, way, milliseconds){
 	// var keysInfo = document.getElementById("keys-info");
+	
 	//Обращение по ссылке к объекту, который вызвал метод
 	var crop = hero.hCrop;
 	var gallery = hero.hGallery;
