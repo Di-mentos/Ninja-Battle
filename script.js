@@ -4,9 +4,7 @@ var keys = {
 	"39": false, //right
 	"40": false, //down
 
-	"69": false, //e - attack1
-	"82": false, //r - attack2
-	"84": false, //t - attack3
+	"82": false, //r - attack
 	"68": false //d - teleport
 };
 
@@ -18,7 +16,7 @@ var sasuke = {
 	currentType: "",
 
 	pressedKey: "",
-	heroKeys: ["37", "38", '39', "69", "82", "84", "68", "50"],
+	heroKeys: ["37", "38", '39', "82", "68", "50"],
 	keyCount: 0,
 
 	name: "Sasuke",
