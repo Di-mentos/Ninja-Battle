@@ -1,11 +1,14 @@
 @import 'reset.scss';
 
+body{
+	overflow: hidden;
+}
+
 .wrapper{
 	height: 70vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-	overflow: hidden;
 }
 
 .gallery{
