@@ -7,7 +7,8 @@ var keys = {
 	"82": false, //r - attack
 	"68": false, //d - teleport
 	"81": false, //q - knockout
-	"87": false //w - knockdown
+	"87": false, //w - knockdown
+	"70": false //f - attackUp
 };
 
 var sasuke = {
@@ -18,7 +19,7 @@ var sasuke = {
 	currentType: "",
 
 	pressedKey: "",
-	heroKeys: ["37", "38", '39', "82", "68", "50", "69", "81", "87"],
+	heroKeys: ["37", "38", '39', "82", "68", "50", "69", "81", "87", "70"],
 	keyCount: 0,
 
 	name: "Sasuke",
@@ -225,7 +226,7 @@ var sasuke = {
 			if(way == "right"){
 				if(this.negativeFlag){
 					this.characterBlock.style.alignSelf = "flex-start";
-					this.moveValueX = document.documentElement.clientWidth + this.moveValueX;
+					this.moveValueX = this.clientWidth + this.moveValueX;
 					this.negativeFlag = false;
 				}
 
@@ -235,7 +236,7 @@ var sasuke = {
 				// console.log("End!");
 				if(!this.negativeFlag){
 					this.characterBlock.style.alignSelf = "flex-end";
-					this.moveValueX = this.moveValueX - document.documentElement.clientWidth;
+					this.moveValueX = this.moveValueX - this.clientWidth;
 					this.negativeFlag = true;
 				}
 
@@ -435,6 +436,36 @@ var sasuke = {
 
 	sasukeAttackUp: function(way){
 		animateMovement(this.valuesAttackUpWidth, this.valuesAttackUpHeight, this, "Sasuke", "attackUp", way, 200);
+	},
+	moveAttackUp: function(way, imageCount){
+		// console.log(imageCount);
+		this.getBlockCoords();
+
+		if(this.characterRight > this.clientWidth - 50){
+			this.moveValueX -= 20;
+		}
+		else if(this.characterLeft < 50){
+			this.moveValueX += 20;
+		}
+
+		if(way == "right"){
+			if(imageCount == 0 ){
+				this.moveValueX += 20;
+			}
+			else if(imageCount == 1){
+				this.moveValueX += 15;
+			}
+		}
+		else if(way == "left"){
+			if(imageCount == 0 ){
+				this.moveValueX -= 20;
+			}
+			else if(imageCount == 1){
+				this.moveValueX -= 15;
+			}
+		}
+		
+		this.characterBlock.style.left = this.moveValueX + "px";
 	},
 
 	sasukeAttackRun: function(way){
@@ -871,7 +902,9 @@ document.addEventListener('keydown', function keyPress(){
 	sasuke.pressedKey = event.keyCode.toString();
 	sasuke.index++;
 
-	sasuke.attackIndex++;
+	if(event.keyCode == 82){
+		sasuke.attackIndex++;
+	}
 
 	// console.log(sasuke.pressedKey + " pressed! Type is " + typeof sasuke.pressedKey);
 	console.log(sasuke.index);
@@ -892,7 +925,9 @@ document.addEventListener('keyup', function(){
 		sasuke.pressedKey = event.keyCode.toString();
 		sasuke.index++;
 
-		sasuke.attackIndex++;
+		if(event.keyCode == 82){
+			sasuke.attackIndex++;
+		}
 
 		// console.log(sasuke.pressedKey + " pressed! Type is " + typeof sasuke.pressedKey);
 		// console.log(sasuke.index);
@@ -911,9 +946,10 @@ function isRightKey(hero){
 	return false;
 }
 
+// Анимации, которые не прерываются нажатием других клавиш
 function noStopAnimation(type){
-	if(type == "jump" || (type == "attack1" || type == "attack2" || type == "attack3") || (type == "damaged" || type == "knockout"
-		|| type == "knockedDown")){
+	if(type == "jump" || type == "teleport" || (type == "attack1" || type == "attack2" || type == "attack3") || 
+		(type == "damaged" || type == "knockout" || type == "knockedDown")){
 		return false;
 	}
 	return true;
@@ -935,9 +971,14 @@ function chooseAnimation(way, type){
 	}
 	else if(keys["82"]){
 		console.log("Pressed R!");
-		sasuke.attackIndex = 1;
-		if(sasuke.attackIndex == 1){
-			sasuke.sasukeAttack1(way);
+		if(type == "stance"){
+			sasuke.attackIndex = 1;
+			if(sasuke.attackIndex == 1){
+				sasuke.sasukeAttack1(way);
+			}
+		}
+		else if(type == "run"){
+			sasuke.sasukeAttackRun(way);
 		}
 	}
 	else if(keys["68"]){
@@ -955,6 +996,10 @@ function chooseAnimation(way, type){
 	else if(keys["87"]){
 		console.log("Pressed W!");
 		sasuke.sasukeKnockedDown(way);
+	}
+	else if(keys["70"]){
+		console.log("Pressed F");
+		sasuke.sasukeAttackUp(way);
 	}
 	/*else if(keys["49"]){
 		console.log("Pressed 1!");
@@ -996,6 +1041,9 @@ function chooseMoveValue(hero, type, way, imageCount){
 	}
 	else if(type == "knockedDown"){
 		hero.moveKnockedDown(way, imageCount);
+	}
+	else if(type == "attackUp"){
+		hero.moveAttackUp(way, imageCount);
 	}
 }
 
