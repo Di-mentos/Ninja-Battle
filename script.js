@@ -14,6 +14,7 @@ var keys = {
 var sasuke = {
 	index: 0,
 	attackIndex: 0,
+	jumpIndex: -1,
 	negativeFlag: false,
 	clientWidth: document.documentElement.clientWidth,
 	currentType: "",
@@ -182,33 +183,39 @@ var sasuke = {
 		animateMovement(this.valuesJumpWidth, this.valuesJumpHeight, this, "Sasuke", "jump", way, 100);
 	},
 	moveJump: function(way, imageCount){
-		// console.log("Move for jump!");
+		this.jumpIndex++;
+		imageCount = this.jumpIndex;
+
+		// console.log("imageCount: " + imageCount + "\njumpIndex: " + this.jumpIndex);
 		this.getBlockCoords();
 		
 		if(this.characterRight > this.clientWidth - 40){
-			this.moveValueX -= 40;
+			this.moveValueX -= 45;
 		}
 		else if(this.characterLeft < 40){
-			this.moveValueX += 40;
+			this.moveValueX += 45;
 		}
 
-		if(imageCount >= 0 && imageCount <= 2){
-			this.moveValueY -= 70;
+		if(this.jumpIndex >= 0 && this.jumpIndex <= 2){
+			this.moveValueY -= 60;
 			if(keys[39]){
-				this.moveValueX += 40;			
+				this.moveValueX += 45;			
 			}
 			else if(keys[37]){
-				this.moveValueX -= 40;
+				this.moveValueX -= 45;
 			}
 		}
-		else if(imageCount >= 3 && imageCount <= 5){
-			this.moveValueY += 70;
+		else if(this.jumpIndex >= 3 && this.jumpIndex <= 5){
+			this.moveValueY += 60;
 			if(keys[39]){
-				this.moveValueX += 40;			
+				this.moveValueX += 45;			
 			}
 			else if(keys[37]){
-				this.moveValueX -= 40;
+				this.moveValueX -= 45;
 			}
+		}
+		else if(this.jumpIndex == 7){
+			this.jumpIndex = -1;
 		}
 		
 		this.characterBlock.style.left = this.moveValueX + "px";
@@ -513,7 +520,17 @@ var sasuke = {
 	},
 
 	sasukeAttackJump: function(way){
-		animateMovement(this.valuesAttackJumpWidth, this.valuesAttackJumpHeight, this, "Sasuke", "attackJump", way, 300);
+		animateMovement(this.valuesAttackJumpWidth, this.valuesAttackJumpHeight, this, "Sasuke", "attackJump", way, 100);
+	},
+	moveAttackJump: function(way, imageCount){
+		console.log(imageCount);
+		
+		if(imageCount == -1){
+			this.jumpIndex = -1;
+		}
+		else{
+			this.moveJump(way, this.jumpIndex);
+		}
 	},
 
 	sasukeWeaponThrow: function(way){
@@ -575,6 +592,21 @@ var sasuke = {
 	getBlockCoords: function(){
 		this.characterLeft = this.characterBlock.getBoundingClientRect().left;
 		this.characterRight = this.characterBlock.getBoundingClientRect().right;
+	}
+};
+
+var weapons = {
+	clientWidth: document.documentElement.clientWidth,
+
+	wCrop: document.getElementsByClassName("character-Sasuke__ability-crop weapon-crop")[0],
+	wGallery: document.getElementsByClassName("weapon-crop__gallery gallery")[0],
+
+	chooseWeapon: function(){
+		if(keys["49"]){
+			console.log("Pressed 1!");
+			
+		}
+		
 	}
 };
 
@@ -652,6 +684,30 @@ function takingDown(hero, way, imageCount){
 		else if(imageCount == 4){
 			hero.moveValueX -= 60;
 		}
+	}
+}
+
+function drawWeapon(widthValues, heightValues, weaponObj, weaponFolder, type, way){
+	var crop = weaponObj.wCrop;
+	var gallery = weaponObj.wGallery;
+	var pixelIndex = 3;
+
+	if(gallery.childElementCount != 0){
+		while(gallery.childElementCount != 0){
+			gallery.removeChild(gallery.children[0]);
+		}
+	}
+
+	for(var i=0; i<widthValues.length; i++){
+		var image = new Image();	
+		image.src = "images/" + weaponFolder + "/" + type + "/" + way + "/" + (i+1) + ".png";
+		// widthValues приносит готовые значения ширины фреймов
+		image.style.width = (widthValues[i] * pixelIndex) + "px";
+		image.style.height = (heightValues[i] * pixelIndex) + "px";
+
+		image.alt = type.charAt(0).toUpperCase() + type.slice(1) + (i+1);
+		image.className = "character-Sasuke__" + type + " image";
+		gallery.appendChild(image);
 	}
 }
 
@@ -948,7 +1004,10 @@ document.addEventListener('keydown', function keyPress(){
 
 	// console.log(sasuke.pressedKey + " pressed! Type is " + typeof sasuke.pressedKey);
 	console.log(sasuke.index);
-	document.removeEventListener('keydown', keyPress);
+	if(event.keyCode != 38){
+		document.removeEventListener('keydown', keyPress);
+	}
+	
 })
 
 // При отжатии клавиши снова добавляется событие нажатия клавиши
@@ -971,7 +1030,9 @@ document.addEventListener('keyup', function(){
 
 		// console.log(sasuke.pressedKey + " pressed! Type is " + typeof sasuke.pressedKey);
 		// console.log(sasuke.index);
-		document.removeEventListener('keydown', keyPress);
+		if(event.keyCode != 38){
+			document.removeEventListener('keydown', keyPress);
+		}
 	});
 })
 
@@ -990,8 +1051,16 @@ function isRightKey(hero){
 function noStopAnimation(type){
 	if(type == "jump" || type == "teleport" || type == "attackUp" || type == "attackRun" || (type == "attack1" || type == "attack2" || 
 		type == "attack3") || (type == "damaged" || type == "knockout" || type == "knockedDown")){
+		
+		/*if(type == "jump" && keys[82]){
+			return true;
+		}
+		else{
+			return false;
+		}*/
 		return false;
 	}
+	
 	return true;
 }
 
@@ -1020,6 +1089,10 @@ function chooseAnimation(way, type){
 		else if(type == "run"){
 			sasuke.sasukeAttackRun(way);
 		}
+		/*else if(type == "jump"){
+			if((keys["82"] && keys["38"]) || keys["82"])
+			sasuke.sasukeAttackJump(way);
+		}*/
 	}
 	else if(keys["68"]){
 		console.log("Pressed D!");
@@ -1041,14 +1114,7 @@ function chooseAnimation(way, type){
 		console.log("Pressed F");
 		sasuke.sasukeAttackUp(way);
 	}
-	/*else if(keys["49"]){
-		console.log("Pressed 1!");
-		sasuke.sasukeChidoriRun(way);
-	}
-	else if(keys["50"]){
-		console.log("Pressed 2!");
-		sasuke.sasukeChidoriNagashi(way);
-	}*/
+	
 }
 
 // Ф-я, определяющая передвижения во время анимаций
@@ -1088,6 +1154,9 @@ function chooseMoveValue(hero, type, way, imageCount){
 	else if(type == "attackRun"){
 		hero.moveAttackRun(way, imageCount);
 	}
+	/*else if(type == "attackJump"){
+		hero.moveAttackJump(way, imageCount);
+	}*/
 }
 
 function animateMovement(widthValues, heightValues, hero, heroName, type, way, milliseconds){
