@@ -435,7 +435,7 @@ var sasuke = {
 	},
 
 	sasukeAttackUp: function(way){
-		animateMovement(this.valuesAttackUpWidth, this.valuesAttackUpHeight, this, "Sasuke", "attackUp", way, 200);
+		animateMovement(this.valuesAttackUpWidth, this.valuesAttackUpHeight, this, "Sasuke", "attackUp", way, 120);
 	},
 	moveAttackUp: function(way, imageCount){
 		// console.log(imageCount);
@@ -469,7 +469,47 @@ var sasuke = {
 	},
 
 	sasukeAttackRun: function(way){
-		animateMovement(this.valuesAttackRunWidth, this.valuesAttackRunHeight, this, "Sasuke", "attackRun", way, 200);
+		animateMovement(this.valuesAttackRunWidth, this.valuesAttackRunHeight, this, "Sasuke", "attackRun", way, 120);
+	},
+	moveAttackRun(way, imageCount){
+		// console.log(imageCount);
+		this.getBlockCoords();
+
+		if(this.characterRight > this.clientWidth - 50){
+			if(imageCount == 0){
+				this.moveValueX -= 40;
+			}
+			else if(imageCount == 1){
+				this.moveValueX -= 8;
+			}
+		}
+		else if(this.characterLeft < 50){
+			if(imageCount == 0){
+				this.moveValueX += 40;
+			}
+			else if(imageCount == 1){
+				this.moveValueX += 8;
+			}
+		}
+
+		if(way == "right"){
+			if(imageCount == 0){
+				this.moveValueX += 40;
+			}
+			else if(imageCount == 1){
+				this.moveValueX += 8;
+			}
+		}
+		else if(way == "left"){
+			if(imageCount == 0){
+				this.moveValueX -= 40;
+			}
+			else if(imageCount == 1){
+				this.moveValueX -= 8;
+			}
+		}
+
+		this.characterBlock.style.left = this.moveValueX + "px";
 	},
 
 	sasukeAttackJump: function(way){
@@ -948,8 +988,8 @@ function isRightKey(hero){
 
 // Анимации, которые не прерываются нажатием других клавиш
 function noStopAnimation(type){
-	if(type == "jump" || type == "teleport" || (type == "attack1" || type == "attack2" || type == "attack3") || 
-		(type == "damaged" || type == "knockout" || type == "knockedDown")){
+	if(type == "jump" || type == "teleport" || type == "attackUp" || type == "attackRun" || (type == "attack1" || type == "attack2" || 
+		type == "attack3") || (type == "damaged" || type == "knockout" || type == "knockedDown")){
 		return false;
 	}
 	return true;
@@ -1044,6 +1084,9 @@ function chooseMoveValue(hero, type, way, imageCount){
 	}
 	else if(type == "attackUp"){
 		hero.moveAttackUp(way, imageCount);
+	}
+	else if(type == "attackRun"){
+		hero.moveAttackRun(way, imageCount);
 	}
 }
 

@@ -59,6 +59,10 @@ a, a:hover {
   text-decoration: none;
 }
 
+body {
+  overflow: hidden;
+}
+
 .wrapper {
   height: 70vh;
   display: -webkit-box;
@@ -71,7 +75,6 @@ a, a:hover {
   -webkit-box-pack: end;
       -ms-flex-pack: end;
           justify-content: flex-end;
-  overflow: hidden;
 }
 
 .gallery {
