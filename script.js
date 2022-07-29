@@ -8,7 +8,8 @@ var keys = {
 	"68": false, //d - teleport
 	"81": false, //q - knockout
 	"87": false, //w - knockdown
-	"70": false //f - attackUp
+	// "70": false //f - attackUp
+	"49": false //1 - throw weapon(kunai)
 };
 
 var sasuke = {
@@ -20,7 +21,7 @@ var sasuke = {
 	currentType: "",
 
 	pressedKey: "",
-	heroKeys: ["37", "38", '39', "82", "68", "50", "69", "81", "87", "70"],
+	heroKeys: ["37", "38", '39', "82", "68", "50", "69", "81", "87", "70", "49", "65"],
 	keyCount: 0,
 
 	name: "Sasuke",
@@ -534,7 +535,29 @@ var sasuke = {
 	},
 
 	sasukeWeaponThrow: function(way){
-		animateMovement(this.valuesWeaponThrowWidth, this.valuesWeaponThrowHeight, this, "Sasuke", "weaponThrow", way, 200);
+		animateMovement(this.valuesWeaponThrowWidth, this.valuesWeaponThrowHeight, this, "Sasuke", "weaponThrow", way, 100);
+	},
+	moveWeaponThrow: function(way, imageCount){
+		// console.log(imageCount);
+
+		if(way == "right"){
+			if(imageCount == 1){
+				this.moveValueX += 5;
+			}
+			else if(imageCount == 2){
+				this.moveValueX -= 4;
+			}
+		}
+		else if(way == "left"){
+			if(imageCount == 1){
+				this.moveValueX -= 5;
+			}
+			else if(imageCount == 2){
+				this.moveValueX += 4;
+			}
+		}
+
+		this.characterBlock.style.left = this.moveValueX + "px";
 	},
 
 	sasukeWeaponThrowJump: function(way){
@@ -595,18 +618,26 @@ var sasuke = {
 	}
 };
 
-var weapons = {
+var weapon = {
 	clientWidth: document.documentElement.clientWidth,
 
-	wCrop: document.getElementsByClassName("character-Sasuke__ability-crop weapon-crop")[0],
+	wCrop: document.getElementsByClassName("character-Sasuke__weapon-crop weapon-crop")[0],
 	wGallery: document.getElementsByClassName("weapon-crop__gallery gallery")[0],
 
-	chooseWeapon: function(){
+	imageWeaponPrev: 0,
+	imageWeaponNext: 1,
+
+	moveWGallery: 0,
+
+	valuesKunaiWidth: [21, 21, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 
+	20, 20, 20, 20, 20, 20, 20],
+	valuesKunaiHeight: [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7],
+
+	chooseWeapon: function(way){
 		if(keys["49"]){
-			console.log("Pressed 1!");
-			
+			// console.log("Pressed 1!");
+			drawWeapon(this.valuesKunaiWidth, this.valuesKunaiHeight, this, "kunai", way);
 		}
-		
 	}
 };
 
@@ -687,10 +718,14 @@ function takingDown(hero, way, imageCount){
 	}
 }
 
-function drawWeapon(widthValues, heightValues, weaponObj, weaponFolder, type, way){
+function drawWeapon(widthValues, heightValues, weaponObj, weaponType, way){	
 	var crop = weaponObj.wCrop;
 	var gallery = weaponObj.wGallery;
-	var pixelIndex = 3;
+	var pixelIndex = 2;
+
+	weaponObj.imageWeaponNext = 1;
+	weaponObj.imageWeaponPrev = 0;
+	weaponObj.moveWGallery = 0;
 
 	if(gallery.childElementCount != 0){
 		while(gallery.childElementCount != 0){
@@ -700,15 +735,166 @@ function drawWeapon(widthValues, heightValues, weaponObj, weaponFolder, type, wa
 
 	for(var i=0; i<widthValues.length; i++){
 		var image = new Image();	
-		image.src = "images/" + weaponFolder + "/" + type + "/" + way + "/" + (i+1) + ".png";
+		image.src = "images/Effects/weapons/" + weaponType + "/" + way + "/" + (i+1) + ".png";
 		// widthValues приносит готовые значения ширины фреймов
 		image.style.width = (widthValues[i] * pixelIndex) + "px";
 		image.style.height = (heightValues[i] * pixelIndex) + "px";
 
-		image.alt = type.charAt(0).toUpperCase() + type.slice(1) + (i+1);
-		image.className = "character-Sasuke__" + type + " image";
+		image.alt = weaponType.charAt(0).toUpperCase() + weaponType.slice(1) + (i+1);
+		image.className = "character-Sasuke__" + weaponType + " image";
 		gallery.appendChild(image);
 	}
+
+	crop.style.width = (widthValues[0] * pixelIndex) + "px";
+	crop.style.height = (heightValues[0] * pixelIndex) + "px";
+	crop.style.marginTop = "-" + parseInt(window.getComputedStyle(crop).height) + "px";
+	crop.style.opacity = "0";
+	gallery.style.transform = "translateX(-" + weaponObj.moveWGallery + "px)";
+
+	if(way == "right"){
+		crop.style.alignSelf = "flex-end";
+	}
+	else if(way == "left"){
+		crop.style.alignSelf = "flex-start";
+	}
+
+	if(weaponType == "kunai"){
+		weapon.wCrop.style.left = "20px";
+		weapon.wCrop.style.top = "-94px";
+	}
+
+	weaponObj.wType = weaponType;
+}
+
+function chooseWeaponAnimation(way, imageCount, milliseconds){
+	if(weapon.wType == "kunai"){
+		showKunai(way, imageCount, milliseconds);
+	}
+}
+
+function showKunai(way, imageCount, milliseconds){
+	var k = 0;
+	// console.log(imageCount);
+	// console.log("imageWeaponNext: " + weapon.imageWeaponNext + "\nimageWeaponPrev: " + weapon.imageWeaponPrev);
+
+	if(imageCount >= 0 && imageCount < 2){
+		if(imageCount == 0){
+			console.log("starting index: " + "\nimageWeaponNext: " + weapon.imageWeaponNext + "\nimageWeaponPrev: " + 
+				weapon.imageWeaponPrev);
+		}
+		weapon.wCrop.style.opacity = "1";
+		drawWeaponFrame();
+		// console.log(way);
+		if(way == "right"){
+			k+=40;
+		}
+		else if(way == "left"){
+			k-=40;
+		}
+		weapon.wCrop.style.left = (parseInt(window.getComputedStyle(weapon.wCrop).left) + k) + "px";
+		k = 0;
+
+		setTimeout(function(){
+			drawWeaponFrame();
+			if(way == "right"){
+				k+=40;
+			}
+			else if(way == "left"){
+				k-=40;
+			}
+			weapon.wCrop.style.left = (parseInt(window.getComputedStyle(weapon.wCrop).left) + k) + "px";
+			k = 0;
+		}, milliseconds/2);
+	}
+	else if(imageCount == 2){
+		if(weapon.imageWeaponPrev != 31){
+			// console.log("not a 7!");
+			drawWeaponFrame();
+			if(way == "right"){
+				k+=40;
+			}
+			else if(way == "left"){
+				k-=40;
+			}
+
+			weapon.wCrop.style.left = (parseInt(window.getComputedStyle(weapon.wCrop).left) + k) + "px";
+			k = 0;
+
+			if(weapon.wCrop.getBoundingClientRect().right >= weapon.clientWidth - 50 || weapon.wCrop.getBoundingClientRect().left < 50){
+				resetWeaponPosition();
+			}
+		}
+		
+		// console.log("imageWeaponNext: " + weapon.imageWeaponNext + "\nimageWeaponPrev: " + weapon.imageWeaponPrev);
+		var interval = setInterval(function(){
+			if(weapon.imageWeaponPrev == 31){
+				console.log("imageWeaponNext: " + weapon.imageWeaponNext + "\nimageWeaponPrev: " + weapon.imageWeaponPrev);
+				resetWeaponPosition();
+
+				weapon.wCrop.style.marginTop = "-" + parseInt(window.getComputedStyle(weapon.wCrop).height) + "px";
+				clearInterval(interval);
+			}
+			else{
+				drawWeaponFrame();
+				if(way == "right"){
+					k+=40;
+				}
+				else if(way == "left"){
+					k-=40;
+				}
+
+				weapon.wCrop.style.left = (parseInt(window.getComputedStyle(weapon.wCrop).left) + k) + "px";
+				k = 0;
+				
+				if(weapon.wCrop.getBoundingClientRect().right >= weapon.clientWidth - 50 || 
+					weapon.wCrop.getBoundingClientRect().left < 50){
+					resetWeaponPosition();
+					clearInterval(interval);
+				}
+			}	
+		}, milliseconds/2);
+	}
+	else if(imageCount == -1){
+		if(way == "right"){
+			k+=20;
+		}
+		else if(way == "left"){
+			k-=20;
+		}
+		weapon.wCrop.style.left = (parseInt(window.getComputedStyle(weapon.wCrop).left) + k) + "px";
+		k = 0;
+		
+		if(weapon.wCrop.getBoundingClientRect().right >= weapon.clientWidth - 50 || weapon.wCrop.getBoundingClientRect().left < 50){
+			resetWeaponPosition();
+		}
+	}
+}
+
+function resetWeaponPosition(){
+	console.log("imageWeaponNext: " + weapon.imageWeaponNext + "\nimageWeaponPrev: " + weapon.imageWeaponPrev);
+	weapon.wCrop.style.opacity = "0";
+	weapon.imageWeaponNext = 1;
+	weapon.imageWeaponPrev = 0;
+	weapon.moveWGallery = 0;
+	weapon.wGallery.style.transform = "translateX(-" + weapon.moveWGallery + "px)";
+	weapon.wCrop.style.width = window.getComputedStyle(weapon.wGallery.children[0]).width;
+	weapon.wCrop.style.height = window.getComputedStyle(weapon.wGallery.children[0]).height;
+
+	weapon.wCrop.style.left = "20px";
+	weapon.wCrop.style.top = "-94px";
+}
+
+function drawWeaponFrame(){
+	weapon.wCrop.style.width = window.getComputedStyle(weapon.wGallery.children[weapon.imageWeaponNext]).width;
+	weapon.wCrop.style.height = window.getComputedStyle(weapon.wGallery.children[weapon.imageWeaponNext]).height;
+	// console.log("previousImageWidth: " + window.getComputedStyle(hero.aGallery.children[hero.imageAbilityPrev]).width);
+	// console.log("nextImageWidth: " + window.getComputedStyle(hero.aGallery.children[hero.imageAbilityNext]).width);
+
+	weapon.moveWGallery += parseInt(window.getComputedStyle(weapon.wGallery.children[weapon.imageWeaponPrev]).width); 
+	weapon.wGallery.style.transform = "translateX(-" + weapon.moveWGallery + "px)";
+	
+	weapon.imageWeaponNext++;
+	weapon.imageWeaponPrev++;
 }
 
 // Функция прорисовки умения
@@ -1007,7 +1193,6 @@ document.addEventListener('keydown', function keyPress(){
 	if(event.keyCode != 38){
 		document.removeEventListener('keydown', keyPress);
 	}
-	
 })
 
 // При отжатии клавиши снова добавляется событие нажатия клавиши
@@ -1049,8 +1234,9 @@ function isRightKey(hero){
 
 // Анимации, которые не прерываются нажатием других клавиш
 function noStopAnimation(type){
-	if(type == "jump" || type == "teleport" || type == "attackUp" || type == "attackRun" || (type == "attack1" || type == "attack2" || 
-		type == "attack3") || (type == "damaged" || type == "knockout" || type == "knockedDown")){
+	if(type == "jump" || type == "teleport" || type == "attackUp" || type == "attackRun" || type == "weaponThrow" || 
+		(type == "attack1" || type == "attack2" || type == "attack3") || (type == "damaged" || type == "knockout" || 
+			type == "knockedDown")){
 		
 		/*if(type == "jump" && keys[82]){
 			return true;
@@ -1114,7 +1300,13 @@ function chooseAnimation(way, type){
 		console.log("Pressed F");
 		sasuke.sasukeAttackUp(way);
 	}
-	
+	else if(keys["49"]){
+		console.log("Pressed 1!");
+		sasuke.sasukeWeaponThrow(way);
+	}
+	/*else if(keys["65"]){
+		sasuke.sasukeFireBall(way);
+	}*/
 }
 
 // Ф-я, определяющая передвижения во время анимаций
@@ -1154,13 +1346,18 @@ function chooseMoveValue(hero, type, way, imageCount){
 	else if(type == "attackRun"){
 		hero.moveAttackRun(way, imageCount);
 	}
+	else if(type == "weaponThrow"){
+		hero.moveWeaponThrow(way, imageCount);
+	}
 	/*else if(type == "attackJump"){
 		hero.moveAttackJump(way, imageCount);
 	}*/
 }
 
 function animateMovement(widthValues, heightValues, hero, heroName, type, way, milliseconds){
-	// var keysInfo = document.getElementById("keys-info");
+	/*var keysInfo = document.getElementById("keys-info");
+	keysInfo.style.position = "absolute";
+	keysInfo.style.left = "0";*/
 
 	//Обращение по ссылке к объекту, который вызвал метод
 	var crop = hero.hCrop;
@@ -1168,6 +1365,7 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 	// hero.characterBlock.style.left = "200px";
 
 	var isAbility = false;
+	var isWeapon = false;
 	var imageMoving = 1; //Индекс следующей картинки, под которую нужно подстроить кроп
 	var imageCount = 0; //Индекс текущей картинки, которую нужно сместить; впоследствии получает расстояние смещения
 	var pixelIndex = 4;
@@ -1249,6 +1447,11 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 		}
 	}
 
+	if(type == "weaponThrow"){
+		isWeapon = true;
+		weapon.chooseWeapon(way);
+	}
+
 	hero.currentType = type;
 
 	var interval = setInterval(function(){
@@ -1316,6 +1519,10 @@ function animateMovement(widthValues, heightValues, hero, heroName, type, way, m
 			//-156+156 = 0, именно поэтому карусель и возвращается в начало
 			hero.moveHGallery += parseInt(window.getComputedStyle(gallery.children[imageCount]).width); 
 			gallery.style.transform = "translateX(-" + hero.moveHGallery + "px)";
+		}
+
+		if(isWeapon){
+			chooseWeaponAnimation(way, imageCount, milliseconds);
 		}
 
 		if(isAbility){

@@ -61,6 +61,7 @@ a, a:hover {
 
 body {
   overflow: hidden;
+  min-height: 100vh;
 }
 
 .wrapper {
@@ -98,15 +99,25 @@ body {
   -ms-flex-item-align: start;
       align-self: flex-start;
   position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 .character-Sasuke__Sasuke-crop {
   margin: 0 auto;
   position: relative;
+  z-index: 10;
   overflow: hidden;
-  -webkit-transform-origin: right;
-          transform-origin: right;
 }
 .character-Sasuke__ability-crop {
+  position: relative;
+  overflow: hidden;
+}
+.character-Sasuke__weapon-crop {
   position: relative;
   overflow: hidden;
 }
@@ -120,6 +131,14 @@ body {
 }
 
 .ability-crop__gallery {
+  bottom: 0;
+  left: 0;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+}
+
+.weapon-crop__gallery {
   bottom: 0;
   left: 0;
   -webkit-box-align: end;
